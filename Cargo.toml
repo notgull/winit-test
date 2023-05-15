@@ -1,0 +1,18 @@
+[package]
+name = "winit-test"
+version = "0.1.0"
+edition = "2021"
+authors = ["John Nunley <jtnunley01@gmail.com>"]
+description = "Run tests using the winit event loop"
+license = "MIT OR Apache-2.0 OR Zlib"
+
+[dependencies]
+winit = { version = "0.28.6", default-features = false }
+
+[dev-dependencies]
+winit = { version = "0.28.6", default-features = false, features = ["x11", "wayland"] }
+
+[[test]]
+name = "winit_test"
+path = "tests/winit_test.rs"
+harness = false
