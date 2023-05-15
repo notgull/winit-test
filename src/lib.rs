@@ -59,6 +59,10 @@ pub mod __private {
     use winit::event_loop::EventLoopBuilder;
     pub use winit::event_loop::EventLoopWindowTarget;
 
+    use owo_colors::OwoColorize;
+    use std::panic::{catch_unwind, AssertUnwindSafe};
+    use std::time::Instant;
+
     #[cfg(target_os = "android")]
     pub use winit::platform::android::{
         activity::AndroidApp as Context, EventLoopBuilderExtAndroid,
@@ -79,15 +83,72 @@ pub mod __private {
 
         let event_loop = builder.build();
 
+        println!("\nRunning {} tests...", tests.len());
+        let mut passed = 0;
+        let mut panics = vec![];
+        let start = Instant::now();
+        let mut run = false;
+        let mut code = 0;
+
         // Run the tests.
         event_loop.run(move |_, elwt, control_flow| {
+            if run {
+                control_flow.set_exit_with_code(code);
+                return;
+            }
+            run = true;
+
             for test in tests {
+                print!("test {} ... ", test.name);
+
                 match test.function {
-                    TestFunction::Oneoff(f) => f(elwt),
+                    TestFunction::Oneoff(f) => {
+                        match catch_unwind(AssertUnwindSafe(move || f(elwt))) {
+                            Ok(()) => {
+                                println!("{}", "ok".green());
+                                passed += 1;
+                            }
+
+                            Err(e) => {
+                                println!("{}", "FAILED".red());
+                                panics.push((test.name, e));
+                            }
+                        }
+                    }
                 }
             }
 
-            control_flow.set_exit();
+            let failures = panics.len();
+            println!();
+            if !panics.is_empty() {
+                println!("failures:\n");
+                for (name, e) in panics.drain(..) {
+                    println!("---- {} panic ----", name);
+
+                    if let Some(s) = e.downcast_ref::<&'static str>() {
+                        println!("{}", s.red());
+                    } else if let Some(s) = e.downcast_ref::<String>() {
+                        println!("{}", s.red());
+                    } else {
+                        println!("{}", "unknown panic type".red());
+                    }
+
+                    println!();
+                }
+
+                print!("test result: {}", "FAILED".red());
+            } else {
+                print!("test result: {}", "ok".green());
+            }
+
+            let elapsed = start.elapsed();
+            println!(
+                ". {} passed; {} failed; finished in {:?}",
+                passed, failures, elapsed
+            );
+
+            code = if failures == 0 { 0 } else { 1 };
+            control_flow.set_exit_with_code(code);
         });
     }
 
