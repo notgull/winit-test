@@ -4,10 +4,6 @@
 
 #![forbid(unsafe_code)]
 
-/// Re-exporting `wasm-bindgen-test`.
-#[cfg(target_arch = "wasm32")]
-#[doc(hidden)]
-pub use wasm_bindgen_test;
 /// Re-exporting `winit` for the sake of convenience.
 pub use winit;
 
@@ -16,10 +12,10 @@ pub use winit;
 macro_rules! main {
     ($ty:ty => $($tt:tt)*) => {
         #[cfg(target_arch = "wasm32")]
-        $crate::wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+        $crate::__private::wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
         #[cfg(not(target_os = "android"))]
-        #[cfg_attr(target_arch = "wasm32", $crate::wasm_bindgen_test::wasm_bindgen_test)]
+        #[cfg_attr(target_arch = "wasm32", $crate::__private::wasm_bindgen_test::wasm_bindgen_test)]
         fn main() -> Result<(), Box<dyn std::error::Error>> {
             const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[
                 $crate::__winit_test_internal_collect_test!($($tt)*)
@@ -64,6 +60,9 @@ macro_rules! __winit_test_internal_collect_test {
 #[doc(hidden)]
 // This part is semver-exempt.
 pub mod __private {
+    #[cfg(target_arch = "wasm32")]
+    pub use wasm_bindgen_test;
+
     pub use winit::event_loop::EventLoopWindowTarget;
     use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
