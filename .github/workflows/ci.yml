@@ -30,7 +30,6 @@ jobs:
           - { target: i686-pc-windows-gnu,      os: windows-latest, host: -i686-pc-windows-gnu }
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-latest,   }
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-latest, options: --no-default-features, features: x11 }
-          - { target: x86_64-unknown-linux-gnu, os: ubuntu-latest, options: --no-default-features, features: "wayland,wayland-dlopen" }
           - { target: x86_64-unknown-redox,     os: ubuntu-latest,   }
           - { target: x86_64-apple-darwin,      os: macos-latest,    }
           - { target: wasm32-unknown-unknown,   os: ubuntu-latest,   }
@@ -86,8 +85,19 @@ jobs:
         !((matrix.platform.os == 'ubuntu-latest') && contains(matrix.platform.target, 'i686')) &&
         !contains(matrix.platform.target, 'redox') &&
         !contains(matrix.platform.target, 'freebsd') &&
-        !contains(matrix.platform.target, 'netbsd')
+        !contains(matrix.platform.target, 'netbsd') &&
+        !contains(matrix.platform.target, 'linux')
       run: cargo $CMD test --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
+
+    - name: Run tests inside Xvfb
+      shell: bash
+      if: >
+        !((matrix.platform.os == 'ubuntu-latest') && contains(matrix.platform.target, 'i686')) &&
+        !contains(matrix.platform.target, 'redox') &&
+        !contains(matrix.platform.target, 'freebsd') &&
+        !contains(matrix.platform.target, 'netbsd') &&
+        contains(matrix.platform.target, 'linux') 
+      run: xvfb-run cargo $CMD test --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
 
     - name: Lint with clippy
       shell: bash
