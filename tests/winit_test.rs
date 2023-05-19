@@ -4,5 +4,6 @@ use winit::event_loop::EventLoopWindowTarget;
 use winit_test::main;
 
 fn smoke(_elwt: &EventLoopWindowTarget<()>) {}
+fn other_smoke(_elwt: &EventLoopWindowTarget<()>) {}
 
-main!(smoke);
+main!(smoke, other_smoke);

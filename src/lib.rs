@@ -10,16 +10,16 @@ pub use winit;
 /// The whole point.
 #[macro_export]
 macro_rules! main {
-    ($ty:ty => $($tt:tt)*) => {
+    ($ty:ty => $($test:expr),*) => {
         #[cfg(target_arch = "wasm32")]
         $crate::__private::wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
         #[cfg(not(target_os = "android"))]
         #[cfg_attr(target_arch = "wasm32", $crate::__private::wasm_bindgen_test::wasm_bindgen_test)]
         fn main() -> Result<(), Box<dyn std::error::Error>> {
-            const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[
-                $crate::__winit_test_internal_collect_test!($($tt)*)
-            ];
+            const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[$(
+                $crate::__winit_test_internal_collect_test!($test)
+            ),*];
 
             $crate::__private::run(TESTS, ());
             Ok(())
@@ -28,9 +28,9 @@ macro_rules! main {
         #[cfg(target_os = "android")]
         #[no_mangle]
         fn android_main(app: $crate::__private::Context) {
-            pub(super) const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[
-                $crate::__winit_test_internal_collect_test!($($tt)*)
-            ];
+            pub(super) const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[$(
+                $crate::__winit_test_internal_collect_test!($test)
+            ),*];
 
             $crate::__private::run(TESTS, app);
         }
@@ -43,18 +43,12 @@ macro_rules! main {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __winit_test_internal_collect_test {
-    () => {};
-    ($name:ident $(, $($tt:tt)*)?) => {
+    ($name:expr) => {
         $crate::__private::WinitBasedTest {
             name: stringify!($name),
             function: $crate::__private::TestFunction::Oneoff($name),
         }
-
-        $(
-            ,
-            $crate::__winit_test_internal_collect_test!($($tt)*);
-        )?
-    }
+    };
 }
 
 #[doc(hidden)]
