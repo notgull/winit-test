@@ -87,6 +87,18 @@ pub mod __private {
 
     /// Run a set of tests using a `winit` context.
     pub fn run<T: 'static>(tests: &'static [WinitBasedTest<T>], _ctx: Context) {
+        // If we're on Miri, we can't run the tests.
+        if cfg!(miri) {
+            eprintln!();
+            eprintln!(
+                "{}: tests cannot be run under miri",
+                "warning(winit-test)".yellow().bold()
+            );
+            eprintln!("    = See this issue for more information: https://github.com/notgull/winit-test/issues/2");
+            eprintln!();
+            return;
+        }
+
         // Create a new event loop and obtain a window target.
         let mut builder = EventLoopBuilder::<T>::with_user_event();
 
