@@ -5,6 +5,9 @@ edition = "2021"
 authors = ["John Nunley <jtnunley01@gmail.com>"]
 description = "Run tests using the winit event loop"
 license = "MIT OR Apache-2.0 OR Zlib"
+documentation = "https://docs.rs/winit-test"
+repository = "https://github.com/notgull/winit-test"
+homepage = "https://github.com/notgull/winit-test"
 
 [dependencies]
 owo-colors = "3.5.0"
