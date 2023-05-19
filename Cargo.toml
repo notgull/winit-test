@@ -10,6 +10,10 @@ license = "MIT OR Apache-2.0 OR Zlib"
 owo-colors = "3.5.0"
 winit = { version = "0.28.6", default-features = false }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen-test = "0.3"
+web-time = "0.2"
+
 [dev-dependencies]
 winit = { version = "0.28.6", default-features = false, features = ["x11", "wayland"] }
 
