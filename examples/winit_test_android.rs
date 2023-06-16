@@ -3,10 +3,9 @@
 use winit::event_loop::EventLoopWindowTarget;
 use winit_test::main;
 
+#[allow(dead_code)]
 fn smoke(_elwt: &EventLoopWindowTarget<()>) {}
+#[allow(dead_code)]
 fn other_smoke(_elwt: &EventLoopWindowTarget<()>) {}
 
 main!(smoke, other_smoke);
-
-#[cfg(target_os = "android")]
-fn main() {}
