@@ -28,7 +28,7 @@ macro_rules! main {
         #[cfg(target_os = "android")]
         #[no_mangle]
         fn android_main(app: $crate::__private::Context) {
-            pub(super) const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[$(
+            const TESTS: &[$crate::__private::WinitBasedTest<$ty>] = &[$(
                 $crate::__winit_test_internal_collect_test!($test)
             ),*];
 
@@ -105,7 +105,7 @@ pub mod __private {
         // Install the Android event loop extension if necessary.
         #[cfg(target_os = "android")]
         {
-            builder = builder.with_android_app(_ctx);
+            builder.with_android_app(_ctx);
         }
 
         let event_loop = builder.build();

@@ -11,7 +11,7 @@ homepage = "https://github.com/notgull/winit-test"
 
 [dependencies]
 owo-colors = "3.5.0"
-winit = { version = "0.28.6", default-features = false }
+winit = { version = "0.28.6", default-features = false, features = ["android-native-activity"] }
 
 [features]
 default = ["x11", "wayland", "wayland-dlopen"]
@@ -28,5 +28,10 @@ winit = { version = "0.28.6", default-features = false, features = ["x11", "wayl
 
 [[test]]
 name = "winit_test"
-path = "tests/winit_test.rs"
 harness = false
+
+# cargo-apk can only select libraries and examples, not tests
+[[example]]
+name = "winit_test_android"
+# https://github.com/rust-mobile/cargo-apk/pull/28
+crate-type = ["cdylib"]

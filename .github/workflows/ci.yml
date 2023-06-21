@@ -32,6 +32,7 @@ jobs:
           - { target: x86_64-unknown-redox,     os: ubuntu-latest,   }
           - { target: x86_64-apple-darwin,      os: macos-latest,    }
           - { target: wasm32-unknown-unknown,   os: ubuntu-latest,   }
+          - { target: aarch64-linux-android,    os: ubuntu-latest,  cmd: apk, options: "--example winit_test_android" }
         include:
           - rust_version: nightly
             platform: { target: wasm32-unknown-unknown, os: ubuntu-latest, options: "-Zbuild-std=panic_abort,std", rustflags: "-Ctarget-feature=+atomics,+bulk-memory" }
@@ -64,9 +65,13 @@ jobs:
       if: (matrix.platform.os == 'ubuntu-latest') && contains(matrix.platform.target, 'i686')
       run: sudo apt-get update && sudo apt-get install gcc-multilib
 
+    - name: Install cargo-apk
+      if: contains(matrix.platform.target, 'android')
+      run: cargo install cargo-apk
+
     - name: Build crate
       shell: bash
-      run: cargo $CMD build --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
+      run: cargo $CMD build --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
 
     - name: Build tests
       shell: bash
@@ -75,6 +80,7 @@ jobs:
         !contains(matrix.platform.target, 'redox') &&
         !contains(matrix.platform.target, 'freebsd') &&
         !contains(matrix.platform.target, 'netbsd') &&
+        !contains(matrix.platform.target, 'android') &&
         matrix.rust_version != '1.64.0'
       run: cargo $CMD test --no-run --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
 
@@ -85,6 +91,7 @@ jobs:
         !contains(matrix.platform.target, 'redox') &&
         !contains(matrix.platform.target, 'freebsd') &&
         !contains(matrix.platform.target, 'netbsd') &&
+        !contains(matrix.platform.target, 'android') &&
         !contains(matrix.platform.target, 'linux')
       run: cargo $CMD test --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
 
@@ -95,7 +102,8 @@ jobs:
         !contains(matrix.platform.target, 'redox') &&
         !contains(matrix.platform.target, 'freebsd') &&
         !contains(matrix.platform.target, 'netbsd') &&
-        contains(matrix.platform.target, 'linux') 
+        !contains(matrix.platform.target, 'android') &&
+        contains(matrix.platform.target, 'linux')
       run: xvfb-run cargo $CMD test --verbose --target ${{ matrix.platform.target }} $OPTIONS --features $FEATURES
 
     - name: Lint with clippy
