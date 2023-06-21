@@ -1,6 +1,6 @@
 [package]
 name = "winit-test"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["John Nunley <jtnunley01@gmail.com>"]
 description = "Run tests using the winit event loop"
