@@ -57,8 +57,8 @@ pub mod __private {
     #[cfg(target_arch = "wasm32")]
     pub use wasm_bindgen_test;
 
+    use winit::event_loop::EventLoopBuilder;
     pub use winit::event_loop::EventLoopWindowTarget;
-    use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
     use owo_colors::OwoColorize;
     use std::any::Any;
@@ -108,7 +108,7 @@ pub mod __private {
             builder.with_android_app(_ctx);
         }
 
-        let event_loop = builder.build();
+        let event_loop = builder.build().expect("Failed to build event loop");
 
         println!("\nRunning {} tests...", tests.len());
         let mut state = State {
@@ -121,13 +121,15 @@ pub mod __private {
 
         // Run the tests.
         #[cfg(not(target_arch = "wasm32"))]
-        event_loop.run(move |_, elwt, control_flow| {
-            run_internal(tests, &mut state, elwt, control_flow);
+        let res = event_loop.run(move |_, elwt| {
+            run_internal(tests, &mut state, elwt);
         });
         #[cfg(target_arch = "wasm32")]
-        event_loop.spawn(move |_, elwt, control_flow| {
+        let res = event_loop.spawn(move |_, elwt, control_flow| {
             run_internal(tests, &mut state, elwt, control_flow);
         });
+
+        res.expect("Event loop failed to run");
     }
 
     /// Run a set of tests using a `winit` context.
@@ -135,10 +137,9 @@ pub mod __private {
         tests: &'static [WinitBasedTest<T>],
         state: &mut State,
         elwt: &EventLoopWindowTarget<T>,
-        control_flow: &mut ControlFlow,
     ) {
         if state.run {
-            control_flow.set_exit_with_code(state.code);
+            elwt.exit();
             return;
         }
         state.run = true;
@@ -191,7 +192,7 @@ pub mod __private {
         );
 
         state.code = if failures == 0 { 0 } else { 1 };
-        control_flow.set_exit_with_code(state.code);
+        elwt.exit();
     }
 
     pub struct WinitBasedTest<T: 'static> {
