@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust_version: ['1.64.0', stable, nightly]
+        rust_version: ['1.65.0', stable, nightly]
         platform:
           - { target: x86_64-pc-windows-msvc,   os: windows-latest,  }
           - { target: i686-pc-windows-msvc,     os: windows-latest,  }
@@ -64,6 +64,10 @@ jobs:
     - name: Install GCC Multilib
       if: (matrix.platform.os == 'ubuntu-latest') && contains(matrix.platform.target, 'i686')
       run: sudo apt-get update && sudo apt-get install gcc-multilib
+
+    - name: Install dependencies
+      if: matrix.platform.os == 'ubuntu-latest'
+      run: sudo apt-get update && sudo apt-get install libxkbcommon-dev libxkbcommon-x11-dev
 
     - name: Install cargo-apk
       if: contains(matrix.platform.target, 'android')

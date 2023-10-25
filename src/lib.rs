@@ -121,15 +121,15 @@ pub mod __private {
 
         // Run the tests.
         #[cfg(not(target_arch = "wasm32"))]
-        let res = event_loop.run(move |_, elwt| {
+        event_loop
+            .run(move |_, elwt| {
+                run_internal(tests, &mut state, elwt);
+            })
+            .expect("Event loop failed to run");
+        #[cfg(target_arch = "wasm32")]
+        event_loop.spawn(move |_, elwt| {
             run_internal(tests, &mut state, elwt);
         });
-        #[cfg(target_arch = "wasm32")]
-        let res = event_loop.spawn(move |_, elwt, control_flow| {
-            run_internal(tests, &mut state, elwt, control_flow);
-        });
-
-        res.expect("Event loop failed to run");
     }
 
     /// Run a set of tests using a `winit` context.

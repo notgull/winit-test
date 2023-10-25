@@ -2,12 +2,13 @@
 name = "winit-test"
 version = "0.1.2"
 edition = "2021"
-authors = ["John Nunley <jtnunley01@gmail.com>"]
+authors = ["John Nunley <dev@notgull.net>"]
 description = "Run tests using the winit event loop"
 license = "MIT OR Apache-2.0 OR Zlib"
 documentation = "https://docs.rs/winit-test"
 repository = "https://github.com/notgull/winit-test"
 homepage = "https://github.com/notgull/winit-test"
+rust-version = "1.65.0"
 
 [dependencies]
 owo-colors = "3.5.0"
@@ -35,3 +36,4 @@ harness = false
 name = "winit_test_android"
 # https://github.com/rust-mobile/cargo-apk/pull/28
 crate-type = ["cdylib"]
+
