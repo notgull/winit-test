@@ -36,12 +36,12 @@ jobs:
         exclude:
           # Android is tested on stable-3
           - toolchain: '1.65.0'
-            platform: { name: 'Android', target: aarch64-linux-android, os: ubuntu-latest, options: '--example winit_test_android', cmd: 'apk --' }
+            platform: { target: aarch64-linux-android,    os: ubuntu-latest,  cmd: apk, options: "--example winit_test_android" }
         include:
           - toolchain: nightly
             platform: { target: wasm32-unknown-unknown, os: ubuntu-latest, options: "-Zbuild-std=panic_abort,std", rustflags: "-Ctarget-feature=+atomics,+bulk-memory" }
           - toolchain: '1.69.0'
-            platform: { name: 'Android', target: aarch64-linux-android, os: ubuntu-latest, options: '--example winit_test_android', cmd: 'apk --' }
+            platform: { target: aarch64-linux-android,    os: ubuntu-latest,  cmd: apk, options: "--example winit_test_android" }
 
     env:
       RUST_BACKTRACE: 1
