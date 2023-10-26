@@ -2,16 +2,17 @@
 name = "winit-test"
 version = "0.1.2"
 edition = "2021"
-authors = ["John Nunley <jtnunley01@gmail.com>"]
+authors = ["John Nunley <dev@notgull.net>"]
 description = "Run tests using the winit event loop"
 license = "MIT OR Apache-2.0 OR Zlib"
 documentation = "https://docs.rs/winit-test"
 repository = "https://github.com/notgull/winit-test"
 homepage = "https://github.com/notgull/winit-test"
+rust-version = "1.65.0"
 
 [dependencies]
 owo-colors = "3.5.0"
-winit = { version = "0.28.6", default-features = false, features = ["android-native-activity"] }
+winit = { version = "0.29.2", default-features = false, features = ["android-native-activity"] }
 
 [features]
 default = ["x11", "wayland", "wayland-dlopen"]
@@ -24,7 +25,7 @@ wasm-bindgen-test = "0.3"
 web-time = "0.2"
 
 [dev-dependencies]
-winit = { version = "0.28.6", default-features = false, features = ["x11", "wayland"] }
+winit = { version = "0.29.2", default-features = false, features = ["x11", "wayland"] }
 
 [[test]]
 name = "winit_test"
@@ -35,3 +36,4 @@ harness = false
 name = "winit_test_android"
 # https://github.com/rust-mobile/cargo-apk/pull/28
 crate-type = ["cdylib"]
+
